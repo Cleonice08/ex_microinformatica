@@ -1,0 +1,73 @@
+name: Basic API call (JavaScript)
+description: Performs a basic Excel API call using plain JavaScript & Promises.
+host: EXCEL
+api_set: {}
+script:
+  content: |
+    var cor;
+
+    $("#run").click(() => tryCatch(run));
+
+    function run() {
+      return Excel.run(function(context) {
+        var range = context.workbook.getSelectedRange();
+        range.format.fill.color = cor || "white";
+        range.load("address");
+        return context.sync().then(function() {
+          console.log('The range address was "' + range.address + '".');
+        });
+      });
+    }
+
+    /** Default helper for invoking an action and handling errors. */
+    function tryCatch(callback) {
+      Promise.resolve()
+        .then(callback)
+        .catch(function(error) {
+          // Note: In a production add-in, you'd want to notify the user through your add-in's UI.
+          console.error(error);
+        });
+    }
+
+    function escolherCor(value) {
+      console.log(`Caixa da cor ${value} escolhida.`);
+      cor = document.getElementById(value).value;
+    }
+  language: typescript
+template:
+  content: "<section class=\"samples ms-font-m\">\n\t<h3>Escolha a Cor: </h3>\n\t<p class=\"ms-font-m\">Selececione as células para mudar a cor.</p>\n\n\n\t<div class=\"cores\">\n\t\t<input onclick=\"escolherCor('vermelho')\" type=\"color\" id=\"vermelho\" name=\"vermelho\"\n\t           value=\"#e66465\">\n\t\t<label for=\"vermelho\">Vermelho</label>\n\t</div>\n\n\t<div class=\"cores\">\n\t\t<input onclick=\"escolherCor('amarelo')\" type=\"color\" id=\"amarelo\" name=\"amarelo\"\n\t            value=\"#f6b73c\">\n\t\t<label for=\"amarelo\">Amarelo</label>\n\t</div>\n\n\t<div class=\"cores\">\n\t\t<input onclick=\"escolherCor('azul')\" type=\"color\" id=\"azul\" name=\"azul\"\n\t            value=\"#0000FF\">\n\t\t<label for=\"azul\">Azul</label>\n\t</div>\n\n\t<div class=\"cores\">\n\t\t<input onclick=\"escolherCor('verde')\" type=\"color\" id=\"verde\" name=\"verde\"\n\t            value=\"#00FF00\">\n\t\t<label for=\"verde\">Verde</label>\n\t</div>\n\n\t<button id=\"run\" class=\"ms-Button\">\n    <span class=\"ms-Button-label\">Trocar</span>\n  </button>\n</section>"
+  language: html
+style:
+  content: |
+    section.samples {
+        margin-top: 20px;
+    }
+
+    section.samples .ms-Button, section.setup .ms-Button {
+        display: block;
+        margin-bottom: 5px;
+        margin-left: 20px;
+        min-width: 80px;
+    }
+
+    .cores > p,
+    label {
+        font: 1rem 'Fira Sans', sans-serif;
+    }
+
+    .cores > input {
+        margin: .4rem;
+    }
+  language: css
+libraries: |
+  https://appsforoffice.microsoft.com/lib/1/hosted/office.js
+  @types/office-js
+
+  office-ui-fabric-js@1.4.0/dist/css/fabric.min.css
+  office-ui-fabric-js@1.4.0/dist/css/fabric.components.min.css
+
+  core-js@2.4.1/client/core.min.js
+  @types/core-js
+
+  jquery@3.1.1
+  @types/jquery@3.3.1
